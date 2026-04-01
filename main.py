@@ -31,7 +31,7 @@ response.raise_for_status()
 #print(data)
 #print(json.dumps(data, indent=4))
 id = data["weather"][0]["id"]
-if id < 700:
+if id < 900:
     #print("Bring Umbrella")
     message = client.messages.create(
         messaging_service_sid='MG1a843f9cb83bdcea99c7a35a858705fd',
