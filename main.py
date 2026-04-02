@@ -10,6 +10,8 @@ print("API_KEY present:", bool(api_key))
 print("ACCOUNT_SID present:", bool(account_sid))
 print("AUTH_TOKEN present:", bool(auth_token))
 
+print("ACCOUNT_SID starts with AC:", account_sid.startswith("AC") if account_sid else False)
+
 client = Client(account_sid, auth_token)
 
 OWM_Endpoint = "https://api.openweathermap.org/data/2.5/weather"
