@@ -36,7 +36,7 @@ if weather_id < 900:
     print("Condition matched, sending SMS...")
     message = client.messages.create(
         messaging_service_sid="MG1a843f9cb83bdcea99c7a35a858705fd",
-        body="GitHub says: Bring Umbrella! ☔️",
+        body="GitHub happily says: Bring Umbrella! ☔️",
         to="+36309843856"
     )
     print("Twilio SID:", message.sid)
