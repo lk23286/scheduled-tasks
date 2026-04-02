@@ -25,7 +25,7 @@ id = data["weather"][0]["id"]
 if id < 900:
     message = client.messages.create(
         messaging_service_sid='MG1a843f9cb83bdcea99c7a35a858705fd',
-        body='Bring Umbrella! ☔️',
+        body='Github says: Bring Umbrella! ☔️',
         to='+36309843856'
     )
 
