@@ -44,4 +44,4 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
           ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
-        run: python main.py
+        run: python -u main.py
