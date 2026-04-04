@@ -32,7 +32,7 @@ print("Weather ID:", weather_id)
 print("Weather main:", data["weather"][0]["main"])
 print("Weather description:", data["weather"][0]["description"])
 
-if weather_id < 900:
+if weather_id < 700:
     print("Condition matched, sending SMS...")
     message = client.messages.create(
         messaging_service_sid="MG1a843f9cb83bdcea99c7a35a858705fd",
