@@ -44,4 +44,6 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
           ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          API_KEY_FOR_STOCK: ${{ secrets.API_KEY_FOR_STOCK }}
+          API_KEY_FOR_NEWS: ${{ secrets.API_KEY_FOR_NEWS }}
         run: python -u main.py
