@@ -206,10 +206,10 @@ def stock_main():
     news_data = get_news_data_for(topics=TOPICS, stock_data=stock_data)
     message_news = get_best_sentiment_news_for(news_data=news_data)
 
-    pct_change = stock_data.get("pct_change")
+    pct_change = abs(stock_data.get("pct_change"))
     message = f"{message_stock}. Relevant news: {message_news}"
 
-    if pct_threshold < abs(pct_change):
+    if pct_threshold < pct_change:
         send_sms(message)
         print("Stock condition matched, sending SMS...")
         print(f"The change: {pct_change} has reached the threshold: {pct_threshold}.")
