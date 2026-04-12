@@ -1,3 +1,16 @@
+# Created: 2026.04.12 by LGL
+#
+# Schedule the Weather and Stock application to run daily at 07:30
+# and send an SMS to the phone number +36 30 984 3856
+# if any of the following conditions are met:
+#
+#   - Weather condition exceeds id_threshold
+#   - Stock condition exceeds pct_threshold
+#
+# Thresholds can be adjusted inside the configuration of the apps
+
+
+
 # COMMON:
 import os
 import requests
@@ -11,16 +24,22 @@ auth_token = os.environ.get("AUTH_TOKEN")
 
 
 def weather_main():
-    print("API_KEY present:", bool(api_key))
-    print("ACCOUNT_SID present:", bool(account_sid))
-    print("AUTH_TOKEN present:", bool(auth_token))
-
-    print("ACCOUNT_SID starts with AC:", account_sid.startswith("AC") if account_sid else False)
-
-    client = Client(account_sid, auth_token)
-
+    sms_message = "Bring Umbrella! ☔️"
     OWM_Endpoint = "https://api.openweathermap.org/data/2.5/weather"
-    id_threshold = 700
+
+    # This data defines when the SMS is sent out.
+    # weather["id"] = numeric weather condition code.
+    # It’s a code grouped by weather category:
+    # Range	Meaning
+    # 200–232	Thunderstorm ⛈️
+    # 300–321	Drizzle 🌦️
+    # 500–531	Rain 🌧️
+    # 600–622	Snow ❄️
+    # 700–781	Atmosphere (fog, dust) 🌫️
+    # 800	Clear ☀️
+    # 801–804	Clouds ☁️
+    # The value under 700 is rainy weather
+    id_threshold = 900
 
     weather_params = {
         "lat": 47.597530,
@@ -28,30 +47,31 @@ def weather_main():
         "appid": api_key
     }
 
+    client = Client(account_sid, auth_token)
+
+    print("Weather app:")
     response = requests.get(url=OWM_Endpoint, params=weather_params, timeout=30)
-    print("Weather status:", response.status_code)
     response.raise_for_status()
 
     data = response.json()
     weather_id = data["weather"][0]["id"]
-    print("Weather ID:", weather_id)
-    print("Weather main:", data["weather"][0]["main"])
-    print("Weather description:", data["weather"][0]["description"])
 
     if weather_id < id_threshold:
-        print("Condition matched, sending SMS...")
+        print("Weather condition matched, sending SMS...")
+        print(f"Weather ID {weather_id} has gone below the threshold {id_threshold}.")
+        print(f"SMS message: {sms_message}")
+
         message = client.messages.create(
             messaging_service_sid="MG1a843f9cb83bdcea99c7a35a858705fd",
-            body="GitHub happily says: Bring Umbrella! ☔️",
+            body=sms_message,
             to="+36309843856"
         )
-        print("Twilio SID:", message.sid)
-        print("Twilio status:", message.status)
+
     else:
-        print("Condition not matched, no SMS sent.")
+        print("Weather condition not matched, no SMS sent.")
         print(f"Weather ID {weather_id} hasn't gone below the threshold {id_threshold}.")
 
-
+    print("")
 
 # STOCK:
 api_key_for_stock = os.environ.get("API_KEY_FOR_STOCK")
@@ -59,10 +79,16 @@ api_key_for_news = os.environ.get("API_KEY_FOR_NEWS")
 
 
 def stock_main():
+    # The Symbol defines the stock that you would like to check
     SYMBOL = "TSLA"
+    # The 'topics' parameter defines which news categories will be monitored.
     TOPICS = "technology"
 
-    pct_threshold = 0.5
+    # This data defines when the SMS is sent out.
+    # It is the precentage of the stock value changing between the latest two subsequent day's at the closing time.
+    pct_threshold = 0.5 # percentage %
+
+    print("Stock app:")
 
     def get_stock_data_for(symbol):
         url = "https://www.alphavantage.co/query"
@@ -175,24 +201,24 @@ def stock_main():
 
 
     stock_data = get_stock_data_for(symbol=SYMBOL)
-    print(stock_data)
     message_stock = f"{SYMBOL} stock has changed  {stock_data["pct_change"]}%"
 
     news_data = get_news_data_for(topics=TOPICS, stock_data=stock_data)
-    #print(news_data)
     message_news = get_best_sentiment_news_for(news_data=news_data)
 
     pct_change = stock_data.get("pct_change")
     message = f"{message_stock}. Relevant news: {message_news}"
-    print(message)
 
     if pct_threshold < abs(pct_change):
         send_sms(message)
-        print("Condition matched, sending Stock SMS...")
+        print("Stock condition matched, sending SMS...")
+        print(f"The change: {pct_change} has reached the threshold: {pct_threshold}.")
+        print(f"SMS message: {message}")
     else:
-        print(f"Condition not matched, no SMS sent."
-              f"The change: {pct_change} hasn't reached the threshold: {pct_threshold}.")
+        print(f"Stock condition not matched, no SMS sent.")
+        print(f"The change: {pct_change} hasn't reached the threshold: {pct_threshold}.")
 
+    print("")
 
 # MAIN
 weather_main()
